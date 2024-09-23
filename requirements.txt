@@ -9,5 +9,9 @@ Requerimientos:
 1. pandas
 2. mysql-connector-python
 3. openpyxl
+4. Fastapi
+5. uvicorn
+6. sqlalchemy
+7. mysqlclient
 
-instalacion: "pip install pandas mysql-connector-python openpyxl"
+instalacion: "pip install pandas mysql-connector-python openpyxl Fastapi uvicorn sqlalechemy mysqlclient"
