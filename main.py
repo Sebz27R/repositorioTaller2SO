@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Query, HTTPException
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
@@ -37,7 +37,7 @@ class PartidoModel(BaseModel):
 
 
 class Partido(Base):
-    __tablename__="partidos"
+    __tablename__ = "partidos"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     home_team = Column(String(30))
@@ -51,35 +51,44 @@ class Partido(Base):
 def read_root():
     return {"message": "Inicio"}
 
+
 @app.get("/partidos/")
-def read_partidos(db: Session = Depends(get_db),skip: int = 0, limit: int = Query(100, le=100)):
+def read_partidos(db: Session = Depends(get_db), skip: int = 0, limit: int = Query(100, le=100)):
     partidos = db.query(Partido).offset(skip).limit(limit).all()
     total = db.query(Partido).count()
     return {"total": total, "Partidos": partidos, "skip": skip, "limit": limit}
 
+
 @app.post("/partido/")
 def crear_partidos(partidos: List[PartidoModel], db: Session = Depends(get_db)):
-    # Contador para saber cuántos registros se agregan
+ 
     partidos_agregados = 0
 
-    # Recorrer los usuarios recibidos
-    for partido_info in partidos:
-        # Crear una instancia de User con los datos recibidos
-        partido = Partido(home_team=partido_info.home_team, away_team=partido_info.away_team, home_goals=partido_info.home_goals,
-                           away_goals=partido_info.away_goals, result = partido_info.result, season= partido_info.season)
-        
-        # Agregar a la base de datos
-        db.add(partido)
-        db.refresh(partido)
-        partidos_agregados += 1
+    try:
+    
+        for partido_info in partidos:
+           
+            partido = Partido(
+                home_team=partido_info.home_team,
+                away_team=partido_info.away_team,
+                home_goals=partido_info.home_goals,
+                away_goals=partido_info.away_goals,
+                result=partido_info.result,
+                season=partido_info.season
+            )
 
-    # Guardar los cambios en la base de datos
-    db.commit()
+            db.add(partido)
+            partidos_agregados += 1
 
-    # Obtener el número total de usuarios en la tabla después de insertar
+       
+        db.commit()
+
+    except Exception as e:
+        db.rollback() 
+        raise HTTPException(status_code=500, detail=f"Error al agregar partidos: {e}")
+
     total_partidos = db.query(Partido).count()
 
-    # Retornar cuántos usuarios se agregaron y cuántos hay en total
     return {"added_count": partidos_agregados, "Total_partidos": total_partidos}
 
 

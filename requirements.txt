@@ -13,5 +13,6 @@ Requerimientos:
 5. uvicorn
 6. sqlalchemy
 7. mysqlclient
+8. requests
 
-instalacion: "pip install pandas mysql-connector-python openpyxl Fastapi uvicorn sqlalechemy mysqlclient"
+instalacion: "pip install pandas mysql-connector-python openpyxl Fastapi uvicorn sqlalechemy mysqlclient requests"
