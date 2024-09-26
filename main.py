@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Query, HTTPException
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ValidationInfo
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
@@ -35,13 +35,15 @@ class PartidoModel(BaseModel):
 
     # Validación personalizada para que los equipos no sean iguales
     @field_validator("away_team")
-    def different_teams(cls, away_team, values):
-        if "home_team" in values and values["home_team"] == away_team:
+    def different_teams(cls, away_team, info: ValidationInfo):
+        home_team = info.data.get("home_team")
+        if home_team and home_team == away_team:
             raise ValueError("El equipo local y el equipo visitante no pueden ser el mismo.")
         return away_team
 
     class Config:
         orm_mode = True
+
 
 # Modelo de la base de datos
 class Partido(Base):
@@ -93,7 +95,13 @@ def crear_partidos(partidos: List[PartidoModel], db: Session = Depends(get_db)):
     # Obtener el número total de partidos en la tabla después de insertar
     total_partidos = db.query(Partido).count()
 
-    return {"added_count": partidos_agregados, "Total_partidos": total_partidos}
+    return {"Partidos agregados": partidos_agregados, "Numero total de partidos": total_partidos}
+
+
+
+
+
+
 
 
 
