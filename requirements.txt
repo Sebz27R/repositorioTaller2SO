@@ -1,18 +1,10 @@
-Creacion del entorno virtual:
 
-1. "python -m venv virtualenv(nombre del entorno)"
-2. Activar el entorno: "./virtualenv/Scripts/activate"
-
-
-Requerimientos:
-
-1. pandas
-2. mysql-connector-python
-3. openpyxl
-4. Fastapi
-5. uvicorn
-6. sqlalchemy
-7. mysqlclient
-8. requests
-
-instalacion: "pip install pandas mysql-connector-python openpyxl Fastapi uvicorn sqlalechemy mysqlclient requests"
+fastapi==0.115.0
+openpyxl==3.1.5
+mysql-connector-python==9.0.0
+uvicorn==0.30.6
+SQLAlchemy==2.0.35
+mysqlclient==2.2.4
+requests==2.32.3
+pydantic==2.9.2
+PyMySQL==1.1.1

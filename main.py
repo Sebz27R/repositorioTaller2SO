@@ -24,7 +24,7 @@ def get_db():
     finally:
         db.close()
 
-# Modelo Pydantic con validación personalizada
+
 class PartidoModel(BaseModel):
     home_team: str = Field(..., min_length=1, max_length=30)
     away_team: str = Field(..., min_length=1, max_length=30)
@@ -33,7 +33,7 @@ class PartidoModel(BaseModel):
     result: str = Field(..., min_length=1, max_length=3)
     season: str = Field(..., min_length=1, max_length=10)
 
-    # Validación personalizada para que los equipos no sean iguales
+
     @field_validator("away_team")
     def different_teams(cls, away_team, info: ValidationInfo):
         home_team = info.data.get("home_team")
@@ -45,7 +45,6 @@ class PartidoModel(BaseModel):
         orm_mode = True
 
 
-# Modelo de la base de datos
 class Partido(Base):
     __tablename__ = "partidos"
 
@@ -73,7 +72,7 @@ def crear_partidos(partidos: List[PartidoModel], db: Session = Depends(get_db)):
 
     try:
         for partido_info in partidos:
-            # Crear una instancia de Partido con los datos recibidos
+          
             partido = Partido(
                 home_team=partido_info.home_team,
                 away_team=partido_info.away_team,
@@ -85,14 +84,14 @@ def crear_partidos(partidos: List[PartidoModel], db: Session = Depends(get_db)):
             db.add(partido)
             partidos_agregados += 1
 
-        # Guardar los cambios en la base de datos
+      
         db.commit()
 
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al agregar partidos: {e}")
 
-    # Obtener el número total de partidos en la tabla después de insertar
+  
     total_partidos = db.query(Partido).count()
 
     return {"Partidos agregados": partidos_agregados, "Numero total de partidos": total_partidos}
